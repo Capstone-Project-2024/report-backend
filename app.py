@@ -12,12 +12,13 @@ mysql_connection = MySQLConnection(app, 'localhost', 'admin', 'admin', 'datadive
 @app.route('/')
 
 def index():
+
     cursor = mysql_connection.get_db().cursor()
-    cursor.execute("SELECT * FROM account")
-    accounts = cursor.fetchall()
+    cursor.execute("SELECT * FROM users")
+    users = cursor.fetchall()
     cursor.close()
-    accounts_list = [dict(account) for account in accounts]
-    return jsonify(accounts_list)
+    users_list = [dict(user) for user in users]
+    return jsonify(users_list)
 
 
 if __name__ == '__main__':
