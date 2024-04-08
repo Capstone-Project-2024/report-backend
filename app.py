@@ -10,6 +10,7 @@ CORS(app)
 
 mysql_connection = MySQLConnection(app, 'localhost', 'admin', 'admin', 'datadive')
 
+
 @app.route('/api/register', methods=['POST'])
 def register():
     username = request.json['username']
@@ -25,6 +26,7 @@ def register():
     else:
         return jsonify({'message': 'Registration failed'}), 500
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     username = request.json['username']
@@ -38,12 +40,35 @@ def login():
     else:
         return jsonify({"message": "Incorrect username or password"}), 401
 
+
 @app.route('/api/crypto')
 def get_crypto_api_data():
     api_url = "https://api.coinlore.net/api/tickers/"
     response = requests.get(api_url)
     crypto = response.json()
     return jsonify(crypto)
+
+
+@app.route('/api/currencyExchange', methods=['GET', 'POST'])
+def make_currency_exchange_list():
+    if request.method == 'POST':
+        currency_want = request.json['wanted_Currency']
+        currency_have = request.json['starting_currency']
+        amount = request.json['currency_Amount']
+
+        urls = 'https://api.api-ninjas.com/v1/convertcurrency?want={}&have={}&amount={}'.format(currency_want,
+                                                                                                currency_have, amount)
+        response = requests.get(urls, headers={'X-Api-Key': '1CVkczf/+3vz6KBha/rZQw==ifMPWZGqaDOIBRAq'})
+        top_currency_exchanges = response.json()
+        print("Received POST request to /api/currencyExchange")
+        print("Request JSON:", request.json)
+        print(amount, currency_want, currency_have)
+        return jsonify(top_currency_exchanges)
+    else:
+        print("Received GET request to /api/currencyExchange")
+
+        return jsonify({})
+
 
 @app.route('/accounts')
 def index():
@@ -56,4 +81,4 @@ def index():
 
 
 if __name__ == '__main__':
-        app.run(debug=True)
+    app.run(debug=True)
